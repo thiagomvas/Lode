@@ -1,12 +1,18 @@
 using Lode.Core;
 using Lode.Core.Abstractions;
 using Lode.Core.Errors;
+using Lode.Core.ValueTypes;
 using Microsoft.Data.Sqlite;
 
 namespace Lode.Drivers.Sqlite;
 
 public sealed class SqliteDriver : IDbDriver
 {
+    public DriverCapabilities Capabilities => 
+        DriverCapabilities.Read | 
+        DriverCapabilities.Write | 
+        DriverCapabilities.Schema | 
+        DriverCapabilities.Transactions;
     public async Task<Result<IDbConnection>> OpenConnectionAsync(DbConnectionOptions options, CancellationToken cancellationToken = default)
     {
         try

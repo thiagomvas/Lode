@@ -2,6 +2,6 @@ namespace Lode.Core.Models.Schema;
 
 public sealed class TableDefinition
 {
-    public required string Name { get; set; }
-    public required IEnumerable<ColumnDefinition> Columns { get; set; }
+    public string Name { get; set; }
+    public IEnumerable<ColumnDefinition> Columns { get; set; }
 }

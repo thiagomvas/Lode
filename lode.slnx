@@ -5,6 +5,7 @@
     <Project Path="src/Lode.Core/Lode.Core.csproj" />
   </Folder>
   <Folder Name="/src/drivers/">
+    <Project Path="src/drivers/Lode.Drivers.AccessDb/Lode.Drivers.AccessDb.csproj" />
     <Project Path="src/drivers/Lode.Drivers.Sqlite/Lode.Drivers.Sqlite.csproj" />
   </Folder>
   <Folder Name="/tests/">

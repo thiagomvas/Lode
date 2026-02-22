@@ -6,6 +6,7 @@ public enum DriverCapabilities
     None            = 0,
     Read            = 1 << 0,
     Write           = 1 << 1,
-    Schema          = 1 << 2,
-    Transactions    = 1 << 3,
+    Query         = 1 << 2,
+    Schema          = 1 << 3,
+    Transactions    = 1 << 4,
 }

@@ -7,6 +7,7 @@ namespace Lode.Drivers.AccessDb;
 
 public sealed class AccessDbDriver : IDbDriver
 {
+    public string Name => "AccessDb";
     public DriverCapabilities Capabilities =>
         DriverCapabilities.Read;
 

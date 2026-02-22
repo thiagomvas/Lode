@@ -8,6 +8,7 @@ namespace Lode.Drivers.Sqlite;
 
 public sealed class SqliteDriver : IDbDriver
 {
+    public string Name => "Sqlite";
     public DriverCapabilities Capabilities => 
         DriverCapabilities.Read | 
         DriverCapabilities.Write | 

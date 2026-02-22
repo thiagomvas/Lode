@@ -31,8 +31,21 @@ public sealed class SqliteDbConnection : IDbConnection
             return DriverErrors.ConnectionFailed(ex.Message);
         }
     }
-    
-    
+
+    public async Task<Result<IDbTransaction>> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var transaction = await _connection.BeginTransactionAsync(cancellationToken);
+            return Result<IDbTransaction>.Success(new SqliteTransaction((Microsoft.Data.Sqlite.SqliteTransaction) transaction));
+        }
+        catch (Exception ex)
+        {
+            return TransactionErrors.TransactionFailed(ex.Message);
+        }
+    }
+
+
     public async ValueTask DisposeAsync()
     {
         await _connection.DisposeAsync();

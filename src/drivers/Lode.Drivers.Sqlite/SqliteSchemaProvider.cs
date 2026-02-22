@@ -22,7 +22,7 @@ public sealed class SqliteSchemaProvider : ISchemaProvider
         {
             var command = _connection.CreateCommand();
             command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name";
-            var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
             var names = new List<string>();
             while (await reader.ReadAsync())
             {
@@ -43,7 +43,7 @@ public sealed class SqliteSchemaProvider : ISchemaProvider
         {
             var command = _connection.CreateCommand();
             command.CommandText = $"PRAGMA table_info({tableName})";
-            var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
 
             List<ColumnDefinition> columns = new();
 
@@ -93,7 +93,7 @@ public sealed class SqliteSchemaProvider : ISchemaProvider
         {
             var command = _connection.CreateCommand();
             command.CommandText = "SELECT name, sql FROM sqlite_master WHERE type = 'table' ORDER BY name;";
-            var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync();
 
             var builder = new System.Text.StringBuilder();
 

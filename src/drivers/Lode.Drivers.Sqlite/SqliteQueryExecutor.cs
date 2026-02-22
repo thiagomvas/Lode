@@ -22,7 +22,7 @@ public sealed class SqliteQueryExecutor : IQueryExecutor
         {
             using var command = _connection.CreateCommand();
             command.CommandText = sql;
-            var reader =  await command.ExecuteReaderAsync(cancellationToken);
+            await using var reader =  await command.ExecuteReaderAsync(cancellationToken);
 
             var columns = Enumerable.Range(0, reader.FieldCount)
                 .Select(i => new ColumnDefinition()

@@ -76,6 +76,13 @@ public sealed class LinuxMdbToolsProvider : IAccessDatabaseProvider
 
         await process.WaitForExitAsync();
     }
+
+    public async Task<string> GetFullSchemaAsync(string file)
+    {
+        var result = await ProcessRunner.RunAsync("mdb-schema", $"\"{file}\" sqlite --not-null --default-values --not-empty");
+        return result.StdOut.Trim();
+    }
+
     private static List<string?> ParseDelimited(string line, char delimiter)
     {
         var result = new List<string?>();

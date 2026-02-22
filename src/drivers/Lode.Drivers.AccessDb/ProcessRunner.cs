@@ -5,6 +5,33 @@ namespace Lode.Drivers.AccessDb;
 
 public static class ProcessRunner
 {
+    public static async Task<bool> IsMdbToolsAvailable()
+    {
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "mdb-ver",
+                Arguments = "--version",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false
+            };
+
+            using var process = Process.Start(psi);
+
+            if (process == null)
+                return false;
+
+            await process.WaitForExitAsync();
+
+            return process.ExitCode == 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
     public static async Task<ProcessResult> RunAsync(string fileName, string arguments = "", string workingDirectory = "")
     {
         var startInfo = new ProcessStartInfo

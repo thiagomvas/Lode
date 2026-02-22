@@ -10,4 +10,5 @@ public interface IAccessDatabaseProvider
     Task<TableDefinition> GetTableSchemaAsync(string file, string table);
 
     IAsyncEnumerable<CanonicalRow> ExportTableAsync(string file, string table);
+    Task<string> GetFullSchemaAsync(string file);
 }

@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Lode.Business/Lode.Business.csproj" />
+    <Project Path="src/Lode.Cli/Lode.Cli.csproj" />
     <Project Path="src/Lode.Core/Lode.Core.csproj" />
   </Folder>
   <Folder Name="/src/drivers/">

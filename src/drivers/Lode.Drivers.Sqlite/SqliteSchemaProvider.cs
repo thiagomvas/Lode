@@ -33,7 +33,7 @@ public sealed class SqliteSchemaProvider : ISchemaProvider
         }
         catch (Exception ex)
         {
-            return SchemaErrors.SchemaFailed(ex.Message);
+            return SchemaErrors.IntrospectionFailed(ex.Message);
         }
     }
 
@@ -83,7 +83,7 @@ public sealed class SqliteSchemaProvider : ISchemaProvider
         }
         catch (Exception ex)
         {
-            return SchemaErrors.SchemaFailed(ex.Message);
+            return SchemaErrors.IntrospectionFailed(ex.Message);
         }
     }
 

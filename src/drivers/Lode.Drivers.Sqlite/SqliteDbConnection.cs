@@ -12,7 +12,10 @@ public sealed class SqliteDbConnection : IDbConnection
     public SqliteDbConnection(SqliteConnection connection)
     {
         _connection = connection;
+        Query = new SqliteQueryExecutor(_connection);
     }
+
+    public IQueryExecutor Query { get; }
 
     public async Task<Result> PingAsync(CancellationToken cancellationToken = default)
     {

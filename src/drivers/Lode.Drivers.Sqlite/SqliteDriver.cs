@@ -16,7 +16,7 @@ public sealed class SqliteDriver : IDbDriver
             await connection.OpenAsync(cancellationToken);
 
             await using var command = connection.CreateCommand();
-            command.CommandText = "PRAGMA foreign_keys = ON;";
+            command.CommandText = "PRAGMA foreign_keys = ON; PRAGMA count_changes = ON";
             await command.ExecuteNonQueryAsync(cancellationToken);
 
             return Result<IDbConnection>.Success(new SqliteDbConnection(connection));

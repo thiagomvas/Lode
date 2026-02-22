@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Lode.Business/Lode.Business.csproj" />
+    <Project Path="src/Lode.Core/Lode.Core.csproj" />
+  </Folder>
+  <Folder Name="/src/drivers/">
+    <Project Path="src/drivers/Lode.Drivers.Sqlite/Lode.Drivers.Sqlite.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Lode.Drivers.Sqlite.Tests/Lode.Drivers.Sqlite.Tests.csproj" />
+    <Project Path="tests/Lode.Tests.Common/Lode.Tests.Common.csproj" />
+  </Folder>
+</Solution>

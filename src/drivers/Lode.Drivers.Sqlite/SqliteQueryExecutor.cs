@@ -25,10 +25,11 @@ public sealed class SqliteQueryExecutor : IQueryExecutor
             var reader =  await command.ExecuteReaderAsync(cancellationToken);
 
             var columns = Enumerable.Range(0, reader.FieldCount)
-                .Select(i => new ColumnDefinition(
-                    reader.GetName(i),
-                    SqliteUtils.MapToCanonical(reader.GetDataTypeName(i))
-                ))
+                .Select(i => new ColumnDefinition()
+                {
+                    Name = reader.GetName(i),
+                    Type = SqliteUtils.MapToCanonical(reader.GetDataTypeName(i))
+                })
                 .ToList();
             var rows = new List<IReadOnlyList<object?>>();
 

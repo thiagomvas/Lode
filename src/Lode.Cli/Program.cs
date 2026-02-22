@@ -32,7 +32,46 @@ while (true)
     var line = Console.ReadLine()?.Trim();
 
     if (string.IsNullOrEmpty(line)) continue;
+    if (line.Equals("tables", StringComparison.OrdinalIgnoreCase))
+    {
+        var result = await connection.Schema.GetTableNamesAsync();
+        if (result.IsFailure)
+        {
+            Console.WriteLine($"Error: {string.Join(", ", result.Errors.Select(e => e.Message))}");
+            continue;
+        }
+        foreach (var table in result.Data)
+            Console.WriteLine(table);
+        continue;
+    }
 
+    if (line.StartsWith("table ", StringComparison.OrdinalIgnoreCase))
+    {
+        var tableName = line[6..].Trim();
+        var result = await connection.Schema.GetTableDefinitionAsync(tableName);
+        if (result.IsFailure)
+        {
+            Console.WriteLine($"Error: {string.Join(", ", result.Errors.Select(e => e.Message))}");
+            continue;
+        }
+        Console.WriteLine($"Table: {result.Data.Name}");
+        Console.WriteLine(new string('-', 40));
+        foreach (var col in result.Data.Columns)
+            Console.WriteLine($"  {col.Name} ({col.Type})");
+        continue;
+    }
+
+    if (line.Equals("schema", StringComparison.OrdinalIgnoreCase))
+    {
+        var result = await connection.Schema.GetSchemaAsync();
+        if (result.IsFailure)
+        {
+            Console.WriteLine($"Error: {string.Join(", ", result.Errors.Select(e => e.Message))}");
+            continue;
+        }
+        Console.WriteLine(result.Data);
+        continue;
+    }
     if (line.Equals("exit", StringComparison.OrdinalIgnoreCase))
     {
         if (activeTransaction is not null)
@@ -114,6 +153,7 @@ async Task ExecuteSqlAsync(string sql)
 
         Console.WriteLine($"\n{result.Data.TotalRows} row(s) returned");
     }
+    
     else
     {
         var result = await connection.Query.ExecuteNonQueryAsync(sql);

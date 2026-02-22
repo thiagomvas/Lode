@@ -12,9 +12,11 @@ public sealed class SqliteDbConnection : IDbConnection
     public SqliteDbConnection(SqliteConnection connection)
     {
         _connection = connection;
-        Query = new SqliteQueryExecutor(_connection);
+        Query = new SqliteQueryExecutor(connection);
+        Schema = new SqliteSchemaProvider(connection);
     }
 
+    public ISchemaProvider Schema { get; }
     public IQueryExecutor Query { get; }
 
     public async Task<Result> PingAsync(CancellationToken cancellationToken = default)

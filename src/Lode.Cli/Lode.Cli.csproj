@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\drivers\Lode.Drivers.Sqlite\Lode.Drivers.Sqlite.csproj" />
+      <ProjectReference Include="..\Lode.Business\Lode.Business.csproj" />
     </ItemGroup>
 
 </Project>

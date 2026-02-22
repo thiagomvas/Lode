@@ -8,6 +8,5 @@ public sealed class DbConnectionOptions
     
     #endregion
     
-    
-    
+    public Dictionary<string, string> Options { get; init; } = [];
 }

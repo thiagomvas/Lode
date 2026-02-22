@@ -8,7 +8,10 @@ var opt = new DbConnectionOptions()
 {
     FilePath = "/home/thiagomv/database.db"
 };
-
+var opt2 = new DbConnectionOptions()
+{
+    FilePath = "/home/thiagomv/database2.db"
+};
 var connResult = await driver.OpenConnectionAsync(opt);
 
 if (connResult.IsFailure)
@@ -21,6 +24,27 @@ await using var connection = connResult.Data;
 
 var ping = await connection.PingAsync();
 Console.WriteLine(ping.IsSuccess ? "Ping successful" : "Ping failed");
+var rows = connection.Exporter.ExportAsync("Products");
+var tdef = (await connection.Schema.GetTableDefinitionAsync("Products")).Data;
+Console.WriteLine("Importing");
+var conn2 = (await driver.OpenConnectionAsync(opt2)).Data;
+await conn2.Query.ExecuteNonQueryAsync("""
+                                       PRAGMA foreign_keys = OFF;
+
+                                       BEGIN TRANSACTION;
+
+                                       SELECT 'DROP TABLE IF EXISTS "' || name || '";'
+                                       FROM sqlite_master
+                                       WHERE type='table' AND name NOT LIKE 'sqlite_%';
+
+                                       COMMIT;
+
+                                       PRAGMA foreign_keys = ON;
+                                       """);
+await conn2.Importer.ImportAsync(rows, tdef);
+
+
+return;
 Console.WriteLine("Enter SQL (or 'exit' to quit, ';' to execute multiline, 'begin'/'commit'/'rollback' for transactions):");
 
 IDbTransaction? activeTransaction = null;

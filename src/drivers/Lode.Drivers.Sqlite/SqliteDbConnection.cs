@@ -14,10 +14,14 @@ public sealed class SqliteDbConnection : IDbConnection
         _connection = connection;
         Query = new SqliteQueryExecutor(connection);
         Schema = new SqliteSchemaProvider(connection);
+        Exporter = new SqliteExporter(connection);
+        Importer = new SqliteImporter(connection);
     }
 
     public ISchemaProvider Schema { get; }
     public IQueryExecutor Query { get; }
+    public IImporter Importer { get; }
+    public IExporter Exporter { get; }
 
     public async Task<Result> PingAsync(CancellationToken cancellationToken = default)
     {

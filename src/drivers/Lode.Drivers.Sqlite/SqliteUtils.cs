@@ -32,4 +32,52 @@ public static class SqliteUtils
 
             _ => CanonicalType.Unknown
         };
+    
+    public static string MapFromCanonical(CanonicalType type) =>
+        type switch
+        {
+            CanonicalType.SmallInt => "INTEGER",
+            CanonicalType.Int => "INTEGER",
+            CanonicalType.BigInt => "INTEGER",
+
+            CanonicalType.Boolean => "INTEGER",
+
+            CanonicalType.Float => "REAL",
+            CanonicalType.Double => "REAL",
+            CanonicalType.Decimal => "REAL",
+
+            CanonicalType.String => "TEXT",
+            CanonicalType.Char => "TEXT",
+
+            CanonicalType.Date => "TEXT",
+            CanonicalType.Time => "TEXT",
+            CanonicalType.DateTime => "TEXT",
+            CanonicalType.DateTimeOffset => "TEXT",
+
+            CanonicalType.Guid => "TEXT",
+            CanonicalType.Json => "TEXT",
+            CanonicalType.Xml => "TEXT",
+
+            CanonicalType.Blob => "BLOB",
+
+            CanonicalType.Null => "NULL",
+
+            _ => "TEXT"
+        };
+    
+    public static string FormatLiteral(object value) =>
+        value switch
+        {
+            null => "NULL",
+            string s => $"'{s.Replace("'", "''")}'",
+            bool b => b ? "1" : "0",
+            DateTime dt => $"'{dt:O}'",
+            Guid g => $"'{g}'",
+            _ => value.ToString()
+        };
+    
+    public static string EscapeIdentifier(string name)
+    {
+        return "\"" + name.Replace("\"", "\"\"") + "\"";
+    }
 }

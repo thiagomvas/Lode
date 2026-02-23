@@ -9,6 +9,7 @@
     <Project Path="src/drivers/Lode.Drivers.Sqlite/Lode.Drivers.Sqlite.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Lode.Business.Tests/Lode.Business.Tests.csproj" />
     <Project Path="tests/Lode.Cli.Tests/Lode.Cli.Tests.csproj" />
     <Project Path="tests/Lode.Drivers.Sqlite.Tests/Lode.Drivers.Sqlite.Tests.csproj" />
     <Project Path="tests/Lode.Tests.Common/Lode.Tests.Common.csproj" />

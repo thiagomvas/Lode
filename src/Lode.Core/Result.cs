@@ -6,8 +6,9 @@ public sealed class Result
 {
     public bool IsSuccess { get; init; }
     public bool IsFailure => !IsSuccess;
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public IEnumerable<Error> Errors { get; init; }
+    public IEnumerable<Error> Errors { get; init; } = [];
 
     protected Result()
     {

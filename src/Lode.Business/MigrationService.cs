@@ -43,7 +43,7 @@ public sealed class MigrationService : IMigrationService
         {
             var schemaResult = await source.Schema.GetTableDefinitionAsync(tableName);
             if (!schemaResult.IsSuccess)
-                return Result.Failure(schemaResult.Errors);
+                return Result.Failure(schemaResult.Errors ?? []);
 
             TableDefinition schema = schemaResult.Data;
 

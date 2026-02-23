@@ -3,7 +3,7 @@ namespace Lode.Core;
 public sealed class Result<T> where T : notnull
 {
     public T Data { get; init; }
-    public IEnumerable<Error> Errors { get; init; }
+    public IEnumerable<Error> Errors { get; init; } = [];
     public bool IsSuccess { get; init; }
     public bool IsFailure => !IsSuccess;
 

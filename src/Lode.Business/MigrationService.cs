@@ -21,13 +21,14 @@ public sealed class MigrationService : IMigrationService
 
         IEnumerable<string> tablesToMigrate;
 
-        if (tables is null)
+        var tablesArr = tables as string[] ?? tables.ToArray();
+        if (tables is null || !tablesArr.Any())
         {
             tablesToMigrate = sourceTables;
         }
         else
         {
-            var requested = tables.ToList();
+            var requested = tablesArr.ToList();
 
             foreach (var table in requested)
             {

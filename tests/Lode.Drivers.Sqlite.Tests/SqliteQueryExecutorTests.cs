@@ -103,16 +103,17 @@ public class SqliteQueryExecutorTests
         Assert.That(result.IsSuccess, Is.True);
         Assert.That(result.Data.Rows[0][1], Is.Null);
     }
-    
+
     [Test]
     public async Task ExecuteScalarAsync_WithCountQuery_ShouldReturnCorrectCount()
     {
-        await _connection.Query.ExecuteNonQueryAsync("CREATE TABLE Users (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL);");
+        await _connection.Query.ExecuteNonQueryAsync(
+            "CREATE TABLE Users (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL);");
         await _connection.Query.ExecuteNonQueryAsync("INSERT INTO Users VALUES (1, 'John');");
         await _connection.Query.ExecuteNonQueryAsync("INSERT INTO Users VALUES (2, 'Jane');");
 
         var result = await _connection.Query.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM Users;");
-    
+
         Assert.That(result.IsSuccess, Is.True);
         Assert.That(result.Data, Is.EqualTo(2));
     }
@@ -127,7 +128,8 @@ public class SqliteQueryExecutorTests
     [Test]
     public async Task ExecuteScalarAsync_WithWrongType_ShouldReturnFailure()
     {
-        await _connection.Query.ExecuteNonQueryAsync("CREATE TABLE Users (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL);");
+        await _connection.Query.ExecuteNonQueryAsync(
+            "CREATE TABLE Users (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL);");
         await _connection.Query.ExecuteNonQueryAsync("INSERT INTO Users VALUES (1, 'John');");
 
         var result = await _connection.Query.ExecuteScalarAsync<int>("SELECT Name FROM Users;");
@@ -137,12 +139,100 @@ public class SqliteQueryExecutorTests
     [Test]
     public async Task ExecuteScalarAsync_WithSingleValue_ShouldReturnCorrectValue()
     {
-        await _connection.Query.ExecuteNonQueryAsync("CREATE TABLE Users (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL);");
+        await _connection.Query.ExecuteNonQueryAsync(
+            "CREATE TABLE Users (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL);");
         await _connection.Query.ExecuteNonQueryAsync("INSERT INTO Users VALUES (1, 'John');");
 
         var result = await _connection.Query.ExecuteScalarAsync<string>("SELECT Name FROM Users WHERE Id = 1;");
-    
+
         Assert.That(result.IsSuccess, Is.True);
         Assert.That(result.Data, Is.EqualTo("John"));
+    }
+
+    [Test]
+    public async Task InsertAsync_ShouldInsertMultipleRowsSuccessfully()
+    {
+        // Arrange
+        await _connection.Query.ExecuteNonQueryAsync(
+            "CREATE TABLE Products (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL, Stock INTEGER, Price REAL);");
+
+        var products = new Dictionary<string, IEnumerable<object?>>
+        {
+            ["Id"] = new object?[] { 1, 2, 3 },
+            ["Name"] = new object?[] { "Apple", "Banana", "Orange" },
+            ["Stock"] = new object?[] { 50, 100, 75 },
+            ["Price"] = new object?[] { 0.5m, 0.3m, 0.4m }
+        };
+
+        // Act
+        var result = await _connection.Query.InsertAsync("Products", products);
+
+        // Assert
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Data, Is.EqualTo(3));
+
+        var queryResult = await _connection.Query.ExecuteQueryAsync("SELECT * FROM Products ORDER BY Id;");
+        Assert.That(queryResult.IsSuccess, Is.True);
+        Assert.That(queryResult.Data.TotalRows, Is.EqualTo(3));
+        Assert.That(queryResult.Data.Rows[0][1], Is.EqualTo("Apple"));
+        Assert.That(queryResult.Data.Rows[1][1], Is.EqualTo("Banana"));
+        Assert.That(queryResult.Data.Rows[2][1], Is.EqualTo("Orange"));
+    }
+
+    [Test]
+    public async Task InsertAsync_WithMismatchedColumnLengths_ShouldReturnFailure()
+    {
+        await _connection.Query.ExecuteNonQueryAsync(
+            "CREATE TABLE Products (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL, Stock INTEGER, Price REAL);");
+
+        var products = new Dictionary<string, IEnumerable<object?>>
+        {
+            ["Id"] = new object?[] { 1, 2 },
+            ["Name"] = new object?[] { "Apple", "Banana", "Orange" }, // Mismatch length
+            ["Stock"] = new object?[] { 50, 100, 75 },
+            ["Price"] = new object?[] { 0.5m, 0.3m, 0.4m }
+        };
+
+        var result = await _connection.Query.InsertAsync("Products", products);
+        Assert.That(result.IsFailure, Is.True);
+    }
+
+    [Test]
+    public async Task InsertAsync_WithEmptyColumns_ShouldReturnFailure()
+    {
+        await _connection.Query.ExecuteNonQueryAsync(
+            "CREATE TABLE Products (Id INTEGER PRIMARY KEY, Name TEXT NOT NULL, Stock INTEGER, Price REAL);");
+
+        var products = new Dictionary<string, IEnumerable<object?>>();
+        var result = await _connection.Query.InsertAsync("Products", products);
+        Assert.That(result.IsFailure, Is.True);
+    }
+
+    [Test]
+    public async Task InsertAsync_WithNullValues_ShouldInsertCorrectly()
+    {
+        await _connection.Query.ExecuteNonQueryAsync(
+            "CREATE TABLE Products (Id INTEGER PRIMARY KEY, Name TEXT, Stock INTEGER, Price REAL);");
+
+        var products = new Dictionary<string, IEnumerable<object?>>
+        {
+            ["Id"] = new object?[] { 1, 2 },
+            ["Name"] = new object?[] { null, "Banana" },
+            ["Stock"] = new object?[] { null, 100 },
+            ["Price"] = new object?[] { 0.5m, null }
+        };
+
+        var result = await _connection.Query.InsertAsync("Products", products);
+        Assert.That(result.IsSuccess, Is.True);
+        Assert.That(result.Data, Is.EqualTo(2));
+
+        var queryResult = await _connection.Query.ExecuteQueryAsync("SELECT * FROM Products ORDER BY Id;");
+        Assert.That(queryResult.IsSuccess, Is.True);
+        Assert.That(queryResult.Data.Rows[0][1], Is.Null);
+        Assert.That(queryResult.Data.Rows[1][1], Is.EqualTo("Banana"));
+        Assert.That(queryResult.Data.Rows[0][2], Is.Null);
+        Assert.That(queryResult.Data.Rows[1][2], Is.EqualTo(100));
+        Assert.That(queryResult.Data.Rows[0][3], Is.EqualTo(0.5m));
+        Assert.That(queryResult.Data.Rows[1][3], Is.Null);
     }
 }

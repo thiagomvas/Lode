@@ -22,38 +22,75 @@ public sealed class InteractiveCli
 
         while (true)
         {
-            var prompt = _session.IsConnected 
+            var prompt = _session.IsConnected
                 ? $"[yellow]{_session.Connection.FormattedName}>[/] "
                 : "[yellow]disconnected>[/] ";
 
-            var input = AnsiConsole.Ask<string>(prompt);
-
+            string input = AnsiConsole.Ask<string>(prompt)?.Trim();
             if (string.IsNullOrWhiteSpace(input)) continue;
             if (input.Equals("exit", StringComparison.OrdinalIgnoreCase)) return;
 
-            var (commandName, context) = CommandParser.Parse(input);
-            if (commandName == null) continue;
-
-            if (!_registry.TryGet(commandName, out var command))
+            if (input.StartsWith("."))
             {
-                AnsiConsole.MarkupLine($"[red]Unknown command:[/] {commandName}");
+                input = input.TrimStart('.');
+                var (commandName, context) = CommandParser.Parse(input);
+                if (commandName == null) continue;
+
+                if (!_registry.TryGet(commandName, out var command))
+                {
+                    AnsiConsole.MarkupLine($"[red]Unknown command:[/] {commandName}");
+                    continue;
+                }
+
+                if (!_session.IsConnected && commandName != "connect" && commandName != "help" &&
+                    commandName != "drivers")
+                {
+                    AnsiConsole.MarkupLine("[red]You must connect first using 'connect <driver> ...'[/]");
+                    continue;
+                }
+
+                try
+                {
+                    await command.Execute(context, _session);
+                }
+                catch (Exception ex)
+                {
+                    AnsiConsole.WriteException(ex);
+                }
+
+                continue;
+            }
+            if (!_session.IsConnected)
+            {
+                AnsiConsole.MarkupLine("[red]You must connect first using 'connect <driver> ...' before querying[/]");
                 continue;
             }
 
-            if (!_session.IsConnected && commandName != "connect" && commandName != "help" && commandName != "drivers")
+            while (!input.TrimEnd().EndsWith(";"))
             {
-                AnsiConsole.MarkupLine("[red]You must connect first using 'connect <driver> ...'[/]");
+                var nextLine = AnsiConsole.Ask<string>("…> ")?.Trim();
+                if (string.IsNullOrWhiteSpace(nextLine)) continue;
+                input += "\n" + nextLine;
+            }
+
+            var queryResult = await _session.Connection.Query.ExecuteQueryAsync(input);
+            if (queryResult.IsFailure)
+            {
+                AnsiConsole.MarkupLine($"[red]Invalid Query:[/] {input}");
                 continue;
             }
 
-            try
+            var table = new Table();
+            foreach (var column in queryResult.Data.Columns)
+                table.AddColumn(column.Name);
+
+            foreach (var row in queryResult.Data.Rows)
             {
-                await command.Execute(context, _session);
+                var stringRow = row.Select(cell => cell?.ToString() ?? "NULL").ToArray();
+                table.AddRow(stringRow);
             }
-            catch (Exception ex)
-            {
-                AnsiConsole.WriteException(ex);
-            }
+
+            AnsiConsole.Write(table);
         }
     }
 }

@@ -16,9 +16,10 @@ public sealed class DriversCommand : ICliCommand
     {
         var table = new Table();
         table.AddColumn("Driver");
+        table.AddColumn("Capabilities");
 
-        foreach (var name in _driverRegistry.GetDriverNames())
-            table.AddRow(name);
+        foreach (var driver in _driverRegistry.GetDrivers())
+            table.AddRow([driver.Name, driver.Capabilities.ToString()]);
 
         AnsiConsole.Write(table);
         return Task.CompletedTask;

@@ -34,4 +34,16 @@ public sealed class AccessDbDriver : IDbDriver
     {
         return new();
     }
+
+    public DbConnectionOptions BuildOptionsFromConnectionString(string connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string cannot be null or empty", nameof(connectionString));
+
+        return new DbConnectionOptions
+        {
+            FilePath = connectionString.Trim(),
+            Options = new Dictionary<string, string>()
+        };
+    }
 }

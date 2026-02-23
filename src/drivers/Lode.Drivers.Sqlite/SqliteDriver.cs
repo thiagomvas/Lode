@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Lode.Core;
 using Lode.Core.Abstractions;
 using Lode.Core.Errors;
@@ -102,4 +103,24 @@ public sealed class SqliteDriver : IDbDriver
             ["ForeignKeys"] = "true"
         }
     };
+
+    public DbConnectionOptions BuildOptionsFromConnectionString(string connectionString)
+    {
+        var builder = new SqliteConnectionStringBuilder(connectionString);
+
+        var options = new DbConnectionOptions
+        {
+            FilePath = builder.DataSource == ":memory:" ? null : builder.DataSource
+        };
+
+        options.Options["Mode"] = builder.Mode.ToString();
+        options.Options["Cache"] = builder.Cache.ToString();
+        options.Options["Pooling"] = builder.Pooling.ToString();
+        options.Options["Password"] = builder.Password ?? string.Empty;
+        options.Options["DefaultTimeout"] = builder.DefaultTimeout.ToString();
+        options.Options["ForeignKeys"] = builder.ForeignKeys.ToString();
+        options.Options["RecursiveTriggers"] = builder.RecursiveTriggers.ToString();
+
+        return options;
+    }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
 
 namespace Lode.Cli;
@@ -17,8 +16,39 @@ public static class CommandParser
         var command = args[0];
         var context = new CommandContext
         {
-            Args = args.Skip(1).ToList()
+            Args = new List<string>(),
+            Options = new Dictionary<string, string>()
         };
+
+        for (int i = 1; i < args.Count; i++)
+        {
+            var arg = args[i];
+
+            if (arg.StartsWith("-") && arg.Contains("="))
+            {
+                // only treat as option if it starts with - or --
+                var parts = arg.TrimStart('-').Split('=', 2);
+                context.Options[parts[0]] = parts[1].Trim('"');
+            }
+            else if (arg.StartsWith("-"))
+            {
+                var key = arg.TrimStart('-');
+                string value = null;
+
+                if (i + 1 < args.Count && !args[i + 1].StartsWith("-"))
+                {
+                    value = args[i + 1].Trim('"');
+                    i++;
+                }
+
+                context.Options[key] = value ?? "true";
+            }
+            else
+            {
+                // everything else is positional argument
+                context.Args.Add(arg);
+            }
+        }
 
         return (command, context);
     }
@@ -28,9 +58,9 @@ public static class CommandParser
         if (string.IsNullOrWhiteSpace(input))
             yield break;
 
+        var current = new System.Text.StringBuilder();
         bool inQuotes = false;
         char quoteChar = '\0';
-        var current = new System.Text.StringBuilder();
 
         for (int i = 0; i < input.Length; i++)
         {
@@ -40,17 +70,16 @@ public static class CommandParser
             {
                 if (c == quoteChar)
                 {
-                    inQuotes = false;
+                    inQuotes = false; // closing quote
                 }
                 else if (c == '\\' && i + 1 < input.Length && input[i + 1] == quoteChar)
                 {
-                    // Handle escaped quote inside quotes
-                    current.Append(quoteChar);
-                    i++; // Skip the escaped quote
+                    current.Append(quoteChar); // escaped quote
+                    i++;
                 }
                 else
                 {
-                    current.Append(c);
+                    current.Append(c); // keep everything inside quotes
                 }
             }
             else

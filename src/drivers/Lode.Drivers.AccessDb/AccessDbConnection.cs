@@ -23,6 +23,7 @@ public sealed class AccessDbConnection : IDbConnection
 
     }
 
+    public string FormattedName { get; init; }
     public ISchemaProvider Schema { get; }
     public IQueryExecutor Query => throw new NotSupportedException("Access Db Driver does not support querying.");
     public IImporter Importer => throw new NotSupportedException("Access Db Driver does not support write operations.");

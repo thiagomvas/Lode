@@ -13,4 +13,8 @@
       <ProjectReference Include="..\Lode.Business\Lode.Business.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Spectre.Console" />
+    </ItemGroup>
+
 </Project>

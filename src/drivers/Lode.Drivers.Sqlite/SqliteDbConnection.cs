@@ -18,6 +18,8 @@ public sealed class SqliteDbConnection : IDbConnection
         Importer = new SqliteImporter(connection);
     }
 
+    public string FormattedName { get; init; }
+
     public ISchemaProvider Schema { get; }
     public IQueryExecutor Query { get; }
     public IImporter Importer { get; }

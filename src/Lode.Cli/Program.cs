@@ -1,32 +1,22 @@
-﻿using Lode.Drivers.AccessDb;
+﻿using Lode.Business;
+using Lode.Cli;
+using Lode.Cli.Commands;
+using Lode.Core.Abstractions;
+using Lode.Drivers.AccessDb;
+using Lode.Drivers.Sqlite;
+using Spectre.Console;
 
-var provider = new LinuxMdbToolsProvider();
+var driverRegistry = new DriverRegistry();
 
-var file = "/home/thiagomv/Downloads/IBJH 2024 - SOFTEAM.accdb";
-var tables = await provider.GetTablesAsync(file);
+driverRegistry.Register(new AccessDbDriver());
+driverRegistry.Register(new SqliteDriver());
 
-foreach (var table in tables)
-{
-    Console.WriteLine(table);
-}
+var commandRegistry = new CommandRegistry();
+commandRegistry.Register(new HelpCommand(commandRegistry));
+commandRegistry.Register(new DriversCommand(driverRegistry));
+commandRegistry.Register(new ConnectCommand(driverRegistry));
+commandRegistry.Register(new DisconnectCommand());
+commandRegistry.Register(new TablesCommand());
 
-var schema = await provider.GetTableSchemaAsync(file, tables.First());
-
-Console.WriteLine(schema.Name);
-
-foreach (var column in schema.Columns)
-{
-    Console.WriteLine($"{column.Id} {column.Name} {column.Type} {column.Flags}");
-}
-
-var count = 0;
-
-await foreach (var row in provider.ExportTableAsync(file, tables.First()))
-{
-    Console.WriteLine(string.Join(" | ", row.Values.Select(v => v?.ToString() ?? "NULL")));
-
-    count++;
-
-    if (count >= 25)
-        break;
-}
+var cli = new InteractiveCli(commandRegistry);
+await cli.Run();

@@ -2,6 +2,7 @@ namespace Lode.Core.Abstractions;
 
 public interface IDbConnection : IAsyncDisposable
 {
+    string FormattedName { get; }
     ISchemaProvider Schema { get; }
     IQueryExecutor Query { get; }
     IImporter Importer { get; }

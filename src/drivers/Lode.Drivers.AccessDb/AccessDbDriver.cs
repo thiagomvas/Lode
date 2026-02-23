@@ -20,7 +20,7 @@ public sealed class AccessDbDriver : IDbDriver
         if (string.IsNullOrWhiteSpace(options.FilePath))
             return DriverErrors.ConnectionFailed("FilePath is missing");
         
-        var connection = new AccessDbConnection(options.FilePath);
+        var connection = new AccessDbConnection(options.FilePath) { FormattedName = $"accdb@{Path.GetFileName(options.FilePath)}"};
         
         return Result<IDbConnection>.Success(connection);
     }

@@ -17,6 +17,7 @@ commandRegistry.Register(new ConnectCommand(driverRegistry));
 commandRegistry.Register(new DisconnectCommand());
 commandRegistry.Register(new TablesCommand());
 commandRegistry.Register(new QueryCommand());
+commandRegistry.Register(new ExportCommand(driverRegistry));
 
 if (args.Contains("--headless"))
 {
@@ -49,6 +50,7 @@ if (args.Contains("--headless"))
     session.Driver = driver;
     session.Connection = connection.Data;
     session.Options = options;
+    session.Registry = driverRegistry;
 
 // Ensure a command is provided
     if (string.IsNullOrWhiteSpace(commandName))

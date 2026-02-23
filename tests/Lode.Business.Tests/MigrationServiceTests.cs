@@ -10,6 +10,7 @@ namespace Lode.Business.Tests;
 
 [TestFixture]
 [Category(TestCategories.Unit)]
+[Category(TestCategories.Business)]
 public class MigrationServiceTests
 {
     private IDbConnection _source;

@@ -105,4 +105,17 @@ public class CommandParserTests
         Assert.That(result.Context.Options["a"], Is.EqualTo("1"));
         Assert.That(result.Context.Options["b"], Is.EqualTo("2"));
     }
+
+    [Test]
+    public void Parse_CommandWithInvalidOptionFormat_ThrowsException()
+    {
+        Assert.Throws<ArgumentException>(() => CommandParser.Parse("run -invalidOption"));
+    }
+
+    [Test]
+    public void Parse_CommandWithEmptyQuotes_ReturnsEmptyArg()
+    {
+        var result = CommandParser.Parse("run \"\"");
+        Assert.That(result.Context.Args, Is.EquivalentTo(new List<string> { "" }));
+    }
 }

@@ -7,7 +7,7 @@ public sealed class QueryCommand : ICliCommand
 {
     public string Name => "query";
     public string Description => "Execute a SQL query and display the results";
-    public string Usage => ".query <sql>";
+    public string Usage => ".query <sql> [--format table|csv|json]";
     public bool RequiresConnection => true;
     public async Task Execute(CommandContext context, CliSession session)
     {
@@ -36,6 +36,13 @@ public sealed class QueryCommand : ICliCommand
             return;
         }
 
-        ResultRenderer.Render(result.Data, sw.Elapsed);
+        var format = OutputFormat.Table;
+        if (context.Options.TryGetValue("format", out var formatStr) &&
+            Enum.TryParse<OutputFormat>(formatStr, ignoreCase: true, out var parsed))
+        {
+            format = parsed;
+        }
+
+        ResultRenderer.Render(result.Data, sw.Elapsed, format);
     }
 }

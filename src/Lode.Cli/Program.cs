@@ -18,6 +18,8 @@ commandRegistry.Register(new DisconnectCommand());
 commandRegistry.Register(new TablesCommand());
 commandRegistry.Register(new QueryCommand());
 commandRegistry.Register(new ExportCommand(driverRegistry));
+commandRegistry.Register(new SchemaCommand());
+commandRegistry.Register(new ClearCommand());
 
 if (args.Contains("--headless"))
 {

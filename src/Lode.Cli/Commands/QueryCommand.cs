@@ -26,7 +26,7 @@ public sealed class QueryCommand : ICliCommand
 
         if (result.IsFailure)
         {
-            AnsiConsole.MarkupLine($"[red]Query failed:[/] {query}");
+            AnsiConsole.MarkupLine($"[red]Query failed:[/] {string.Join(", ", result.Errors)}");
             return;
         }
 

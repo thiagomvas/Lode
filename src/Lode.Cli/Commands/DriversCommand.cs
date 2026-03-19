@@ -2,6 +2,8 @@ using Lode.Cli;
 using Spectre.Console;
 using Lode.Core.Abstractions;
 
+namespace Lode.Cli.Commands;
+
 public sealed class DriversCommand : ICliCommand
 {
     private readonly IDriverRegistry _driverRegistry;

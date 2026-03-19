@@ -83,7 +83,7 @@ public sealed class InteractiveCli
             var queryResult = await _session.Connection.Query.ExecuteQueryAsync(input);
             if (queryResult.IsFailure)
             {
-                AnsiConsole.MarkupLine($"[red]Invalid Query:[/] {input}");
+                AnsiConsole.MarkupLine($"[red]Query failed:[/] {string.Join(", ", queryResult.Errors)}");
                 continue;
             }
 

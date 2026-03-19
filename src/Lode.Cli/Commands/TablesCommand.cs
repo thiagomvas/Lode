@@ -1,13 +1,21 @@
 using Lode.Cli;
 using Spectre.Console;
 
+namespace Lode.Cli.Commands;
+
 public sealed class TablesCommand : ICliCommand
 {
     public string Name => "tables";
 
     public async Task Execute(CommandContext context, CliSession session)
     {
-        var result = await session.Connection.Schema.GetTableNamesAsync(); // implement in your IDbConnection
+        if (!session.IsConnected)
+        {
+            AnsiConsole.MarkupLine("[red]You must connect first.[/]");
+            return;
+        }
+
+        var result = await session.Connection.Schema.GetTableNamesAsync();
 
         var table = new Table();
         table.AddColumn("Tables");

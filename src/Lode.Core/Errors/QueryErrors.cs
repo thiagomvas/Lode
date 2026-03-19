@@ -6,4 +6,6 @@ public static class QueryErrors
         => new Error("Query.MissingArgument", message);
     public static Error InvalidArgument(string message)
         => new Error("Query.InvalidArgument", message);
+    public static Error ExecutionFailed(string message)
+        => new Error("Query.ExecutionFailed", message);
 }

@@ -1,6 +1,5 @@
+using System.Diagnostics;
 using Spectre.Console;
-using System;
-using System.Threading.Tasks;
 
 namespace Lode.Cli;
 
@@ -79,24 +78,17 @@ public sealed class InteractiveCli
             }
 
             _lastCommand = input;
+            var sw = Stopwatch.StartNew();
             var queryResult = await _session.Connection.Query.ExecuteQueryAsync(input);
+            sw.Stop();
+
             if (queryResult.IsFailure)
             {
-                AnsiConsole.MarkupLine($"[red]Query failed:[/] {string.Join(", ", queryResult.Errors)}");
+                AnsiConsole.MarkupLine($"[red]Query failed:[/] {string.Join(", ", queryResult.Errors.Select(e => e.Message))}");
                 continue;
             }
 
-            var table = new Table();
-            foreach (var column in queryResult.Data.Columns)
-                table.AddColumn(column.Name);
-
-            foreach (var row in queryResult.Data.Rows)
-            {
-                var stringRow = row.Select(cell => cell?.ToString() ?? "NULL").ToArray();
-                table.AddRow(stringRow);
-            }
-
-            AnsiConsole.Write(table);
+            ResultRenderer.Render(queryResult.Data, sw.Elapsed);
         }
     }
 }

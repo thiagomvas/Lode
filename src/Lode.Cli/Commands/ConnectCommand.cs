@@ -61,7 +61,7 @@ public sealed class ConnectCommand : ICliCommand
             var result = await driver.OpenConnectionAsync(options);
             if (result.IsFailure)
             {
-                AnsiConsole.MarkupLine($"[red]Failed to connect:[/] {string.Join(',', result.Errors)}");
+                AnsiConsole.MarkupLine($"[red]Failed to connect:[/] {string.Join(", ", result.Errors.Select(e => e.Message))}");
                 return;
             }
 

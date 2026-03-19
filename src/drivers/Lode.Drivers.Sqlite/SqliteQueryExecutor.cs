@@ -57,7 +57,7 @@ public sealed class SqliteQueryExecutor : IQueryExecutor
         }
         catch (Exception ex)
         {
-            return Result<QueryResult>.Failure();
+            return Result<QueryResult>.Failure(QueryErrors.ExecutionFailed(ex.Message));
         }
     }
 
@@ -72,7 +72,7 @@ public sealed class SqliteQueryExecutor : IQueryExecutor
         }
         catch (Exception ex)
         {
-            return Result<long>.Failure();
+            return Result<long>.Failure(QueryErrors.ExecutionFailed(ex.Message));
         }
     }
 
@@ -89,11 +89,10 @@ public sealed class SqliteQueryExecutor : IQueryExecutor
                 return Result<T>.Success(t);
             }
             return Result<T>.Failure();
-            
         }
         catch (Exception ex)
         {
-            return Result<T>.Failure();
+            return Result<T>.Failure(QueryErrors.ExecutionFailed(ex.Message));
         }
     }
 

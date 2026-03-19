@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Spectre.Console;
 
 namespace Lode.Cli.Commands;
@@ -25,24 +26,16 @@ public sealed class QueryCommand : ICliCommand
 
         var query = string.Join(" ", context.Args);
 
+        var sw = Stopwatch.StartNew();
         var result = await session.Connection.Query.ExecuteQueryAsync(query);
+        sw.Stop();
 
         if (result.IsFailure)
         {
-            AnsiConsole.MarkupLine($"[red]Query failed:[/] {string.Join(", ", result.Errors)}");
+            AnsiConsole.MarkupLine($"[red]Query failed:[/] {string.Join(", ", result.Errors.Select(e => e.Message))}");
             return;
         }
 
-        var table = new Table();
-        foreach (var column in result.Data.Columns)
-            table.AddColumn(column.Name);
-
-        foreach (var row in result.Data.Rows)
-        {
-            var stringRow = row.Select(cell => cell?.ToString() ?? "NULL").ToArray();
-            table.AddRow(stringRow);
-        }
-
-        AnsiConsole.Write(table);
+        ResultRenderer.Render(result.Data, sw.Elapsed);
     }
 }

@@ -11,6 +11,9 @@ public sealed class ConnectCommand : ICliCommand
 {
     private readonly IDriverRegistry _driverRegistry;
     public string Name => "connect";
+    public string Description => "Connect to a database using the specified driver";
+    public string Usage => ".connect <driver> [key=value ...]";
+    public bool RequiresConnection => false;
 
     public ConnectCommand(IDriverRegistry driverRegistry)
     {

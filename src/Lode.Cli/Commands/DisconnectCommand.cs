@@ -5,6 +5,9 @@ using Spectre.Console;
 public sealed class DisconnectCommand : ICliCommand
 {
     public string Name => "disconnect";
+    public string Description => "Close the current database connection";
+    public string Usage => ".disconnect";
+    public bool RequiresConnection => true;
 
     public async Task Execute(CommandContext context, CliSession session)
     {

@@ -8,6 +8,9 @@ public sealed class DriversCommand : ICliCommand
 {
     private readonly IDriverRegistry _driverRegistry;
     public string Name => "drivers";
+    public string Description => "List all registered database drivers";
+    public string Usage => ".drivers";
+    public bool RequiresConnection => false;
 
     public DriversCommand(IDriverRegistry driverRegistry)
     {

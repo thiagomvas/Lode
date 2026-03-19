@@ -47,10 +47,9 @@ public sealed class InteractiveCli
                     continue;
                 }
 
-                if (!_session.IsConnected && commandName != "connect" && commandName != "help" &&
-                    commandName != "drivers")
+                if (!_session.IsConnected && command.RequiresConnection)
                 {
-                    AnsiConsole.MarkupLine("[red]You must connect first using 'connect <driver> ...'[/]");
+                    AnsiConsole.MarkupLine("[red]You must connect first using '.connect <driver> ...'[/]");
                     continue;
                 }
 

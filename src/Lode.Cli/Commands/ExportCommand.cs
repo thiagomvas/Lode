@@ -8,7 +8,10 @@ namespace Lode.Cli.Commands;
 
 public sealed class ExportCommand : ICliCommand
 {
-    public string Name { get; } = "export";
+    public string Name => "export";
+    public string Description => "Export tables from the current connection to another database";
+    public string Usage => ".export [table ...] --target-driver <driver> --target-connection <connection>";
+    public bool RequiresConnection => true;
     private readonly IDriverRegistry _driverRegistry;
 
     public ExportCommand(IDriverRegistry driverRegistry)

@@ -4,7 +4,10 @@ namespace Lode.Cli.Commands;
 
 public sealed class QueryCommand : ICliCommand
 {
-    public string Name { get; } = "query";
+    public string Name => "query";
+    public string Description => "Execute a SQL query and display the results";
+    public string Usage => ".query <sql>";
+    public bool RequiresConnection => true;
     public async Task Execute(CommandContext context, CliSession session)
     {
         if (!session.IsConnected)

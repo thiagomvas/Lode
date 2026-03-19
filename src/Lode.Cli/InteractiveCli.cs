@@ -8,6 +8,7 @@ public sealed class InteractiveCli
 {
     private readonly CommandRegistry _registry;
     private readonly CliSession _session;
+    private string _lastCommand = string.Empty;
 
     public InteractiveCli(CommandRegistry registry)
     {
@@ -27,7 +28,11 @@ public sealed class InteractiveCli
                 : "[yellow]disconnected>[/] ";
 
             string input = AnsiConsole.Ask<string>(prompt)?.Trim();
-            if (string.IsNullOrWhiteSpace(input)) continue;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                if (string.IsNullOrWhiteSpace(_lastCommand)) continue;
+                input = _lastCommand;
+            }
             if (input.Equals("exit", StringComparison.OrdinalIgnoreCase)) return;
 
             if (input.StartsWith("."))
@@ -49,6 +54,7 @@ public sealed class InteractiveCli
                     continue;
                 }
 
+                _lastCommand = "." + input;
                 try
                 {
                     await command.Execute(context, _session);
@@ -73,6 +79,7 @@ public sealed class InteractiveCli
                 input += "\n" + nextLine;
             }
 
+            _lastCommand = input;
             var queryResult = await _session.Connection.Query.ExecuteQueryAsync(input);
             if (queryResult.IsFailure)
             {
